@@ -1,23 +1,35 @@
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SelectionModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
-public class root {
+public class root{
     private JPanel rootPanel;
     private JTextField refLabel;
     private JTextField xLabel;
     private JTextField yLabel;
     private JTextField colorLabel;
     private JButton startButton;
+    private JList fixList;
     private javax.swing.Timer timer;
     private Point point;
+    private Point refPoint;
+    private ArrayList <Point> fixPointArray;
     private java.awt.Robot robot;
     private java.awt.Color color;
-    private final int tps = 100;
+    private final int tps = 10;
 
-    public root() {
+    public root(){
+        fixPointArray = new ArrayList<Point>();
+        fixList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        fixList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        refPoint = new Point(0,0);
+        //robot init
         try {robot = new Robot();}
-        catch (Exception e){
+        catch (Exception e) {
             System.out.println("Error with Robot...");
         }
         point = new Point(1,1);
@@ -34,29 +46,59 @@ public class root {
                 xLabel.setText(String.valueOf(point.x));
                 yLabel.setText(String.valueOf(point.y));
                 colorLabel.setText(color_string);
+                //fixpoint
+                //fixList = new JList(fixPointArray);
+                DefaultListModel mod = new DefaultListModel<String>();
+                fixPointArray.forEach(p -> {
+                    Color color1 = robot.getPixelColor(p.x, p.y);
+                    String str = String.format("%03d %03d %03d",
+                            color1.getRed(),
+                            color1.getGreen(),
+                            color1.getBlue());
+                    str = String.format("x:%03d, y:%03d, color: %s",
+                            p.x, p.y, str);
+                    mod.addElement(str);
+                });
+                fixList.setModel(mod);
             }
         });
         timer.start();
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(timer.isRunning()){
-                    startButton.setText("Start");
-                    timer.stop();
-                }else{
-                    startButton.setText("Stop");
-                    timer.start();
-                }
+        startButton.addActionListener(e -> {
+            if(timer.isRunning()){
+                startButton.setText("Start");
+                timer.stop();
+            }else{
+                startButton.setText("Stop");
+                timer.start();
+            }
 
-            }
         });
-        rootPanel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                System.out.println("key");
-            }
+        java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            //if((e.getID() == KeyEvent.KEY_PRESSED)&&(e.getKeyCode()==KeyEvent.VK_F1)){
+            //    System.out.println("<F1>");
+            //}
+            //System.out.printf("id:%s, code:%s\n",e.getID(), e.getKeyCode());
+            if(e.getID() == KeyEvent.KEY_PRESSED)
+                switch (e.getKeyCode()){
+                    case KeyEvent.VK_F1:
+                        fixPoint();
+                        break;
+                    case KeyEvent.VK_F3:
+                        fixRefPoint();
+                        break;
+                }
+            return false;
         });
+
+    }
+
+    public void fixPoint(){
+        fixPointArray.add(MouseInfo.getPointerInfo().getLocation());
+    }
+
+    public void fixRefPoint(){
+        refPoint = MouseInfo.getPointerInfo().getLocation();
 
     }
 
@@ -69,4 +111,5 @@ public class root {
         frame.setAlwaysOnTop(true);
 
     }
+
 }
