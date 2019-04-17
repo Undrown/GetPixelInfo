@@ -16,11 +16,12 @@ public class root {
     private final int tps = 10;
 
     public root() {
-        this.timer = new javax.swing.Timer((int)(1000/tps), new ActionListener() {
+        timer = new javax.swing.Timer((int)(1000/tps), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("tick");
             }
         });
+        timer.start();
         rootPanel.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -46,7 +47,14 @@ public class root {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                timer.start();
+                if(timer.isRunning()){
+                    startButton.setText("Start");
+                    timer.stop();
+                }else{
+                    startButton.setText("Stop");
+                    timer.start();
+                }
+
             }
         });
     }
