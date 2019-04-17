@@ -13,7 +13,7 @@ public class root{
     private JTextField yLabel;
     private JTextField colorLabel;
     private JButton startButton;
-    private JList fixList;
+    private JTextArea fixList;
     private javax.swing.Timer timer;
     private Point point;
     private Point refPoint;
@@ -24,8 +24,6 @@ public class root{
 
     public root(){
         fixPointArray = new ArrayList<Point>();
-        fixList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        fixList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         refPoint = new Point(0,0);
         //robot init
         try {robot = new Robot();}
@@ -47,19 +45,16 @@ public class root{
                 yLabel.setText(String.valueOf(point.y));
                 colorLabel.setText(color_string);
                 //fixpoint
-                //fixList = new JList(fixPointArray);
-                DefaultListModel mod = new DefaultListModel<String>();
+                fixList.setText("");
                 fixPointArray.forEach(p -> {
-                    Color color1 = robot.getPixelColor(p.x, p.y);
-                    String str = String.format("%03d %03d %03d",
-                            color1.getRed(),
-                            color1.getGreen(),
-                            color1.getBlue());
-                    str = String.format("x:%03d, y:%03d, color: %s",
-                            p.x, p.y, str);
-                    mod.addElement(str);
+                    fixList.append(String.format(
+                            "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n",
+                            p.x,
+                            p.y,
+                            robot.getPixelColor(p.x, p.y).getRed(),
+                            robot.getPixelColor(p.x, p.y).getGreen(),
+                            robot.getPixelColor(p.x, p.y).getBlue()));
                 });
-                fixList.setModel(mod);
             }
         });
         timer.start();
@@ -75,10 +70,6 @@ public class root{
 
         });
         java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-            //if((e.getID() == KeyEvent.KEY_PRESSED)&&(e.getKeyCode()==KeyEvent.VK_F1)){
-            //    System.out.println("<F1>");
-            //}
-            //System.out.printf("id:%s, code:%s\n",e.getID(), e.getKeyCode());
             if(e.getID() == KeyEvent.KEY_PRESSED)
                 switch (e.getKeyCode()){
                     case KeyEvent.VK_F1:
