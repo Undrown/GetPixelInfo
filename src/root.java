@@ -78,14 +78,11 @@ public class root{
                 }
             return false;
         });
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String s = (String)JOptionPane.showInputDialog(rootPanel,
-                        "x,y","0,0");
-                String[] ss = s.split(",",2);
-                fixRefPoint(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
-            }
+        button1.addActionListener(e -> {
+            String s = JOptionPane.showInputDialog(rootPanel,
+                    "x,y","0,0");
+            String[] ss = s.split(",",2);
+            fixRefPoint(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         });
     }
 
