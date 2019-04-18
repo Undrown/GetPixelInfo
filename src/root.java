@@ -1,11 +1,12 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class root{
     private JPanel rootPanel;
@@ -22,15 +23,21 @@ public class root{
     private ArrayList <Point> fixPointArray;
     private java.awt.Robot robot;
     private java.awt.Color color;
+    private Map <String, pixelChecker> checkers;
 
     private root(){
         fixPointArray = new ArrayList<>();
         refPoint = new Point(0,0);
         //robot init
-        try {robot = new Robot();}
+        try {
+            robot = new Robot();
+            robot.setAutoDelay(100);
+            robot.setAutoWaitForIdle(true);
+        }
         catch (Exception e) {
             System.out.println("Error with Robot...");
         }
+
         point = new Point(1,1);
         int tps = 10;
         timer = new javax.swing.Timer(1000/ tps, e -> {
@@ -74,7 +81,7 @@ public class root{
                         fixRefPoint();
                         break;
                     case KeyEvent.VK_F2:
-                        unfixRefPoint();
+                        unfixPoint();
                 }
             return false;
         });
@@ -89,15 +96,14 @@ public class root{
     private void fixPoint(){
         fixPointArray.add(MouseInfo.getPointerInfo().getLocation());
     }
+    private void unfixPoint(){
+        fixPointArray.remove(fixPointArray.size()-1);
+    }
 
     private void fixRefPoint(int x, int y){
         refPoint.x = x;
         refPoint.y = y;
         refLabel.setText(String.format("x:%03d, y:%03d", refPoint.x, refPoint.y));
-    }
-
-    private void unfixRefPoint(){
-        fixPointArray.remove(fixPointArray.size()-1);
     }
 
     private void fixRefPoint(){
@@ -114,6 +120,35 @@ public class root{
         }catch (Exception e){
             System.err.println(e.getMessage());
         }
+    }
+
+
+    class pixelChecker{
+        private int x;
+        private int y;
+        private int rgb;
+        public pixelChecker(int x, int y, int rgb){
+            //stores x, y, rgbColor
+            this.rgb = rgb;
+            this.x = x;
+            this.y = y;
+        }
+
+        public boolean check(){
+            return robot.getPixelColor(x, y).getRGB()==rgb;
+        }
+
+        public void click(){
+            robot.mouseMove(this.x, this.y);
+            robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(MouseEvent.BUTTON1_DOWN_MASK);
+            robot.delay(200);
+        }
+    }
+
+    public void initCheckers(){
+        checkers = new HashMap<String, pixelChecker>();
+        checkers.put("inTown", new pixelChecker(0, 0, 0));
     }
 
     public static void main(String[] args) {
