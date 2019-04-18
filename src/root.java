@@ -1,10 +1,9 @@
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.SelectionModel;
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.io.File;
 
 public class root{
     private JPanel rootPanel;
@@ -20,10 +19,9 @@ public class root{
     private ArrayList <Point> fixPointArray;
     private java.awt.Robot robot;
     private java.awt.Color color;
-    private final int tps = 10;
 
-    public root(){
-        fixPointArray = new ArrayList<Point>();
+    private root(){
+        fixPointArray = new ArrayList<>();
         refPoint = new Point(0,0);
         //robot init
         try {robot = new Robot();}
@@ -31,34 +29,30 @@ public class root{
             System.out.println("Error with Robot...");
         }
         point = new Point(1,1);
-        timer = new javax.swing.Timer((int)(1000/tps), new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //System.out.println("tick");
-                point = MouseInfo.getPointerInfo().getLocation();
-                color = robot.getPixelColor(point.x, point.y);
-                String color_string = String.format(
-                        "R:%03d   G:%03d   B:%03d",
-                        color.getRed(),
-                        color.getGreen(),
-                        color.getBlue());
-                xLabel.setText(String.valueOf(point.x));
-                yLabel.setText(String.valueOf(point.y));
-                colorLabel.setText(color_string);
-                //fixpoint
-                fixList.setText("");
-                fixPointArray.forEach(p -> {
-                    fixList.append(String.format(
-                            "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n",
-                            p.x,
-                            p.y,
-                            robot.getPixelColor(p.x, p.y).getRed(),
-                            robot.getPixelColor(p.x, p.y).getGreen(),
-                            robot.getPixelColor(p.x, p.y).getBlue()));
-                });
-            }
+        int tps = 10;
+        timer = new javax.swing.Timer(1000/ tps, e -> {
+            //System.out.println("tick");
+            point = MouseInfo.getPointerInfo().getLocation();
+            color = robot.getPixelColor(point.x, point.y);
+            String color_string = String.format(
+                    "R:%03d   G:%03d   B:%03d",
+                    color.getRed(),
+                    color.getGreen(),
+                    color.getBlue());
+            xLabel.setText(String.valueOf(point.x));
+            yLabel.setText(String.valueOf(point.y));
+            colorLabel.setText(color_string);
+            //fixPoint
+            fixList.setText("");
+            fixPointArray.forEach(p -> fixList.append(String.format(
+                    "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n",
+                    p.x,
+                    p.y,
+                    robot.getPixelColor(p.x, p.y).getRed(),
+                    robot.getPixelColor(p.x, p.y).getGreen(),
+                    robot.getPixelColor(p.x, p.y).getBlue())));
         });
         timer.start();
-
         startButton.addActionListener(e -> {
             if(timer.isRunning()){
                 startButton.setText("Start");
@@ -67,7 +61,6 @@ public class root{
                 startButton.setText("Stop");
                 timer.start();
             }
-
         });
         java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
             if(e.getID() == KeyEvent.KEY_PRESSED)
@@ -81,16 +74,26 @@ public class root{
                 }
             return false;
         });
-
     }
 
-    public void fixPoint(){
+    private void fixPoint(){
         fixPointArray.add(MouseInfo.getPointerInfo().getLocation());
     }
 
-    public void fixRefPoint(){
-        refPoint = MouseInfo.getPointerInfo().getLocation();
-
+    private void fixRefPoint(){
+        try{
+            refPoint = MouseInfo.getPointerInfo().getLocation();
+            refLabel.setText(String.format("x:%03d, y:%03d", refPoint.x, refPoint.y));
+            //screen rect 10x10 > refPoint.png
+            Rectangle rect = new Rectangle();
+            rect.x = refPoint.x;
+            rect.y = refPoint.y;
+            rect.height = 10;
+            rect.width = 10;
+            ImageIO.write(robot.createScreenCapture(rect), "png", new File("refPoint.png"));
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
@@ -102,5 +105,4 @@ public class root{
         frame.setAlwaysOnTop(true);
 
     }
-
 }
