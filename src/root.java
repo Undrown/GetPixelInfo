@@ -70,6 +70,8 @@ public class root{
                     case KeyEvent.VK_F3:
                         fixRefPoint();
                         break;
+                    case KeyEvent.VK_F2:
+                        unfixRefPoint();
                 }
             return false;
         });
@@ -77,6 +79,10 @@ public class root{
 
     private void fixPoint(){
         fixPointArray.add(MouseInfo.getPointerInfo().getLocation());
+    }
+
+    private void unfixRefPoint(){
+        fixPointArray.remove(fixPointArray.size()-1);
     }
 
     private void fixRefPoint(){
