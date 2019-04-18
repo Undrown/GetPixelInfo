@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.io.File;
@@ -13,6 +15,7 @@ public class root{
     private JTextField colorLabel;
     private JButton startButton;
     private JTextArea fixList;
+    private JButton button1;
     private javax.swing.Timer timer;
     private Point point;
     private Point refPoint;
@@ -75,10 +78,25 @@ public class root{
                 }
             return false;
         });
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s = (String)JOptionPane.showInputDialog(rootPanel,
+                        "x,y","0,0");
+                String[] ss = s.split(",",2);
+                fixRefPoint(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
+            }
+        });
     }
 
     private void fixPoint(){
         fixPointArray.add(MouseInfo.getPointerInfo().getLocation());
+    }
+
+    private void fixRefPoint(int x, int y){
+        refPoint.x = x;
+        refPoint.y = y;
+        refLabel.setText(String.format("x:%03d, y:%03d", refPoint.x, refPoint.y));
     }
 
     private void unfixRefPoint(){
