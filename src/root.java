@@ -31,7 +31,6 @@ public class root{
         point = new Point(1,1);
         int tps = 10;
         timer = new javax.swing.Timer(1000/ tps, e -> {
-            //System.out.println("tick");
             point = MouseInfo.getPointerInfo().getLocation();
             color = robot.getPixelColor(point.x, point.y);
             String color_string = String.format(
@@ -39,15 +38,15 @@ public class root{
                     color.getRed(),
                     color.getGreen(),
                     color.getBlue());
-            xLabel.setText(String.valueOf(point.x));
-            yLabel.setText(String.valueOf(point.y));
+            xLabel.setText(String.valueOf(point.x - refPoint.x));
+            yLabel.setText(String.valueOf(point.y - refPoint.y));
             colorLabel.setText(color_string);
             //fixPoint
             fixList.setText("");
             fixPointArray.forEach(p -> fixList.append(String.format(
                     "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n",
-                    p.x,
-                    p.y,
+                    p.x - refPoint.x,
+                    p.y - refPoint.y,
                     robot.getPixelColor(p.x, p.y).getRed(),
                     robot.getPixelColor(p.x, p.y).getGreen(),
                     robot.getPixelColor(p.x, p.y).getBlue())));
