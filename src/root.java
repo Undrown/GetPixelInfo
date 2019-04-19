@@ -14,6 +14,7 @@ public class root{
     private JButton startButton;
     private JTextArea fixList;
     private JButton button1;
+    private JLabel rgbColorLabel;
     private javax.swing.Timer timer;
     private Point point;
     private Point refPoint;
@@ -40,23 +41,27 @@ public class root{
             point = MouseInfo.getPointerInfo().getLocation();
             color = robot.getPixelColor(point.x, point.y);
             String color_string = String.format(
-                    "%d (R:%03d   G:%03d   B:%03d)",
-                    color.getRGB(),
+                    "(R:%03d   G:%03d   B:%03d)",
                     color.getRed(),
                     color.getGreen(),
                     color.getBlue());
             xLabel.setText(String.valueOf(point.x - refPoint.x));
             yLabel.setText(String.valueOf(point.y - refPoint.y));
             colorLabel.setText(color_string);
+            rgbColorLabel.setText(String.valueOf(color.getRGB()));
             //fixPoint
             fixList.setText("");
-            fixPointArray.forEach(p -> fixList.append(String.format(
-                    "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n",
+            fixPointArray.forEach(p -> {
+                Color clr = robot.getPixelColor(p.x, p.y);
+                fixList.append(String.format(
+                    "X:%d, Y:%d, R:%03d   G:%03d   B:%03d\n%d\n",
                     p.x - refPoint.x,
                     p.y - refPoint.y,
-                    robot.getPixelColor(p.x, p.y).getRed(),
-                    robot.getPixelColor(p.x, p.y).getGreen(),
-                    robot.getPixelColor(p.x, p.y).getBlue())));
+                    clr.getRed(),
+                    clr.getGreen(),
+                    clr.getBlue(),
+                    clr.getRGB()));
+            });
         });
         timer.start();
         startButton.addActionListener(e -> {
