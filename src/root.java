@@ -2,11 +2,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class root{
     private JPanel rootPanel;
@@ -23,7 +20,6 @@ public class root{
     private ArrayList <Point> fixPointArray;
     private java.awt.Robot robot;
     private java.awt.Color color;
-    private Map <String, pixelChecker> checkers;
 
     private root(){
         fixPointArray = new ArrayList<>();
@@ -44,7 +40,8 @@ public class root{
             point = MouseInfo.getPointerInfo().getLocation();
             color = robot.getPixelColor(point.x, point.y);
             String color_string = String.format(
-                    "R:%03d   G:%03d   B:%03d",
+                    "%d (R:%03d   G:%03d   B:%03d)",
+                    color.getRGB(),
                     color.getRed(),
                     color.getGreen(),
                     color.getBlue());
@@ -122,35 +119,6 @@ public class root{
         }
     }
 
-
-    class pixelChecker{
-        private int x;
-        private int y;
-        private int rgb;
-        public pixelChecker(int x, int y, int rgb){
-            //stores x, y, rgbColor
-            this.rgb = rgb;
-            this.x = x;
-            this.y = y;
-        }
-
-        public boolean check(){
-            return robot.getPixelColor(x, y).getRGB()==rgb;
-        }
-
-        public void click(){
-            robot.mouseMove(this.x, this.y);
-            robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
-            robot.mouseRelease(MouseEvent.BUTTON1_DOWN_MASK);
-            robot.delay(200);
-        }
-    }
-
-    public void initCheckers(){
-        checkers = new HashMap<String, pixelChecker>();
-        checkers.put("inTown", new pixelChecker(0, 0, 0));
-    }
-
     public static void main(String[] args) {
         JFrame frame = new JFrame("root");
         frame.setContentPane(new root().rootPanel);
@@ -158,6 +126,5 @@ public class root{
         frame.pack();
         frame.setVisible(true);
         frame.setAlwaysOnTop(true);
-
     }
 }
